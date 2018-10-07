@@ -4,7 +4,8 @@
             [schema.core :as s]
             [compojure.api.meta :refer [restructure-param]]
             [buddy.auth.accessrules :refer [restrict]]
-            [buddy.auth :refer [authenticated?]]))
+            [buddy.auth :refer [authenticated?]]
+            [whereis.owntracks.core :as owntracks]))
 
 (defn access-error [_ _]
   (unauthorized {:error "unauthorized"}))
@@ -27,6 +28,12 @@
              :data {:info {:version "1.0.0"
                            :title "Sample API"
                            :description "Sample Services"}}}}
+
+  (GET "/whereis" []
+       :return String
+       :path-params [username :- String]
+       :summary "location of a user"
+       (ok (owntracks/get-latest-location username)))
   
   (GET "/authenticated" []
        :auth-rules authenticated?
@@ -34,7 +41,7 @@
        (ok {:user user}))
   (context "/api" []
     :tags ["thingie"]
-    
+
     (GET "/plus" []
       :return       Long
       :query-params [x :- Long, {y :- Long 1}]
