@@ -1,10 +1,36 @@
 (ns whereis.owntracks.core
   (:require
-  [clojure.tools.logging :as log]
-  [whereis.config :refer [env]]
-  [clojurewerkz.machine-head.client :as mh]
-  [mount.core :refer [defstate]]
-  [clojure.tools.logging :as log]))
+    [clojure.tools.logging :as log]
+    [clojure.java.io :as io]
+    [clojure.string :as str]
+    [whereis.config :refer [env]]
+    [clojurewerkz.machine-head.client :as mh]
+    [mount.core :refer [defstate]]
+    [clojure.tools.logging :as log])
+  (:import (java.io InputStream)
+           (java.security KeyStore)
+           (javax.net.ssl SSLContext)
+           (javax.net.ssl TrustManagerFactory)))
+
+; It would make sense to use a library like less-awful-ssl
+; https://github.com/aphyr/less-awful-ssl or use their implementation
+; like https://github.com/aphyr/less-awful-ssl/blob/master/src/less/awful/ssl.clj
+; in order to do this right and handle ssl/tls connections in a sane manner
+; Otherwise, maybe it makes sense to ignore TLS for development, and set the
+; right environment variables to specify a keystore to use as a truststore in production
+(defn get-socketfactory-from-keystore-inputstream
+  ""
+  [^InputStream inputstream]
+  (let [^KeyStore trust-store (KeyStore/getInstance (KeyStore/getDefaultType))
+        truststore-password (env :trustStorePassword)
+        ^TrustManagerFactory trust-factory (TrustManagerFactory/getInstance (TrustManagerFactory/getDefaultAlgorithm))]
+    (.init trust-factory trust-store)
+    (let [trust-managers (.getTrustManagers trust-factory)
+          ^SSLContext ssl-context (SSLContext/getInstance "TLSv1.2")]
+      (.load trust-store inputstream (.toCharArray truststore-password))
+      (.init ssl-context nil trust-managers nil)
+      (SSLContext/setDefault ssl-context)
+      (.getSocketFactory (SSLContext/getDefault)))))
 
 ; use http://www.luminusweb.net/docs/components.md as a reference:
 ; here we can call (mh/generate-id)
@@ -14,6 +40,11 @@
 
 (def locations
   (atom {}))
+
+(defn username-from-topic
+  "Given an MQTT topic named owntracks/username/device, parse the username out of the topic"
+  [topic]
+  (first (rest (str/split topic #"/"))))
 
 (defn update-latest-location
   "Update the latest location for a user."
@@ -27,15 +58,26 @@
   (let [key (keyword username)]
     (-> @locations key)))
 
-(defn handle-owntracks-update [^String topic meta ^bytes payload]
+(defn handle-owntracks-update
+      "Handle a single location update"
+      [^String topic meta ^bytes payload]
   (do
-    (update-latest-location topic (String. payload "UTF-8"))
+    (update-latest-location (username-from-topic topic) (String. payload "UTF-8"))
       (log/warn (String. payload "UTF-8"))))
+
 
 (defstate mqtt
           :start (let [broker-url (env :broker-url)
                        topic (env :owntracks-topic)
-                       mqtt (mh/connect broker-url "conn")]
+                       mqtt (mh/connect broker-url {:client-id ""
+                                                    :username (env :mqtt-username)
+                                                    :password (env :mqtt-password)
+                                                    ;:socket-factory (.getSocketFactory (SSLContext/getDefault))
+                                                    ;:socket-factory (get-socketfactory-from-keystore-inputstream
+                                                    ;                  (io/input-stream
+                                                    ;                    (java.io.File.
+                                                    ;                      (env :trustStorePath))))
+                                                    })]
                    (do
                      (mh/subscribe mqtt {topic 0} handle-owntracks-update)
                      mqtt))
