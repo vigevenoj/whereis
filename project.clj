@@ -1,6 +1,6 @@
 (defproject whereis "0.1.0-SNAPSHOT"
 
-  :description "FIXME: write description"
+  :description "location tracking"
   :url "http://example.com/FIXME"
 
   :dependencies [[baking-soda "0.2.0" :exclusions [cljsjs/react-bootstrap]]
@@ -62,7 +62,9 @@
   
 
   :profiles
-  {:uberjar {:omit-source true
+  {:prod { :dependencies [[day8.re-frame/tracing-stubs "0.5.1"]]}
+   :uberjar {:omit-source true
+             :dependencies [[day8.re-frame/tracing-stubs "0.5.1"]]
              :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
              :cljsbuild
              {:builds
@@ -77,6 +79,8 @@
                  :infer-externs true
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}
+                 :clojure-defines {"re_frame.trace.trace_enabled_QMARK_" true
+                                    "day8.re_frame.tracing.trace_enabled_QMARK_" true}
                  :externs ["react/externs/react.js"]}}}}
              
              
@@ -93,6 +97,7 @@
                                  [cheshire "5.8.1"]
                                  [cider/piggieback "0.3.9"]
                                  [day8.re-frame/re-frame-10x "0.3.3-react16"]
+                                 [day8.re-frame/tracing "0.5.1"]
                                  [doo "0.1.10"]
                                  [expound "0.7.1"]
                                  [figwheel-sidecar "0.5.16"]
