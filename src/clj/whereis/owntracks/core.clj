@@ -3,6 +3,7 @@
     [clojure.tools.logging :as log]
     [clojure.java.io :as io]
     [clojure.string :as str]
+    [cheshire.core :refer :all]
     [whereis.config :refer [env]]
     [clojurewerkz.machine-head.client :as mh]
     [mount.core :refer [defstate]]
@@ -46,6 +47,16 @@
   [topic]
   (first (rest (str/split topic #"/"))))
 
+(defn device-from-topic
+  "Given an MQTT topic named owntracks/username/device, parse the device out of the topic"
+  [topic]
+  (last (str/split topic #"/")))
+
+(defn have-location-for?
+  "Return true if we have recorded a location for the provided username, else false"
+  [username]
+  (contains? @locations (keyword username)))
+
 (defn update-latest-location
   "Update the latest location for a user."
   ; turn username into key, associate new-location with that, like
@@ -56,14 +67,23 @@
 (defn get-latest-location [username]
   "Return the latest location for [username]"
   (let [key (keyword username)]
-    (-> @locations key)))
+    ; these keys are selected to match the schema in whereis.routes.services
+    (select-keys (-> @locations key) [:device :lat :lon :tst])))
 
 (defn handle-owntracks-update
       "Handle a single location update"
       [^String topic meta ^bytes payload]
   (do
-    (update-latest-location (username-from-topic topic) (String. payload "UTF-8"))
-      (log/warn (String. payload "UTF-8"))))
+    ; what i want to do here is to split the topic from owntracks/username/device
+    ; so that i can put the "device" part of the topic into the map of data that
+    ; will be saved for that user (so owntracks/jacob/iphone and owntracks/jacob/spot
+    ; end up being the location data for :jacob and i can tell which device most-recently
+    ; sent an update
+    (update-latest-location (username-from-topic topic)
+                            (assoc (parse-string (String. payload "UTF-8") true)
+                              (keyword "device")
+                              (device-from-topic topic)))
+    (log/warn (str topic (String. payload "UTF-8")))))
 
 
 (defstate mqtt
