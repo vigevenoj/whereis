@@ -90,6 +90,7 @@
 ;-Djavax.net.ssl.trustStore=/Users/vigevenoj/code/LocationServer/src/main/resources/sbe-mqtt.keystore -Djavax.net.ssl.trustStorePassword=changeit
    :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[binaryage/devtools "0.9.10"]
+                                 [cheshire "5.8.1"]
                                  [cider/piggieback "0.3.9"]
                                  [day8.re-frame/re-frame-10x "0.3.3-react16"]
                                  [doo "0.1.10"]
