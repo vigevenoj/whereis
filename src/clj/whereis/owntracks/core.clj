@@ -83,7 +83,7 @@
                             (assoc (parse-string (String. payload "UTF-8") true)
                               (keyword "device")
                               (device-from-topic topic)))
-    (log/warn (str topic (String. payload "UTF-8")))))
+    (log/warn (str topic " " (String. payload "UTF-8")))))
 
 
 (defstate mqtt
