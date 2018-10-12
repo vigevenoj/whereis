@@ -1,7 +1,7 @@
 (defproject whereis "0.1.0-SNAPSHOT"
 
   :description "location tracking"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/vigevenoj/whereis"
 
   :dependencies [[baking-soda "0.2.0" :exclusions [cljsjs/react-bootstrap]]
                  [buddy "2.0.0"]
