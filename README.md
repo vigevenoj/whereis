@@ -13,6 +13,7 @@ You will need [Leiningen][1] 2.0 or above installed.
 ## Configuration
 
 You'll need to provide a config.edn with appropriate values:
+
 {:dev false
  :port 3000
  :nrepl-port 7000
