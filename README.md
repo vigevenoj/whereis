@@ -23,6 +23,9 @@ You'll need to provide a config.edn with appropriate values:
  :mqtt-password ""
  }
 
+Alternatively, environment variables can be used to configure the application, eg,
+`WORKER_THREADS=4 IO_THREADS=4 IO__HTTP_MAX_CONNECTIONS=5 NREPL_PORT=7000 BROKER_URL=tcp://example.org:1883 OWNTRACKS_TOPIC=owntracks/# MQTT_USERNAME=username MQTT_PASSWORD=password java -Xmx60m -Xms60m -jar target/uberjar/whereis.jar`
+
  There is some dead code for loading up a keystore as a custom trust store but that does not work
 
 ## Running
