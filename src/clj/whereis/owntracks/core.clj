@@ -89,7 +89,7 @@
 (defstate mqtt
           :start (let [broker-url (env :broker-url)
                        topic (env :owntracks-topic)
-                       mqtt (mh/connect broker-url {:client-id ""
+                       mqtt (mh/connect broker-url {:client-id "whereis-test"
                                                     :username (env :mqtt-username)
                                                     :password (env :mqtt-password)
                                                     ;:socket-factory (.getSocketFactory (SSLContext/getDefault))
