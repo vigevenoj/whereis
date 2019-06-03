@@ -74,6 +74,7 @@
       "Handle a single location update"
       [^String topic meta ^bytes payload]
   (do
+    (log/warn (str topic " " (String. payload "UTF-8"))))
     ; what i want to do here is to split the topic from owntracks/username/device
     ; so that i can put the "device" part of the topic into the map of data that
     ; will be saved for that user (so owntracks/jacob/iphone and owntracks/jacob/spot
@@ -82,8 +83,7 @@
     (update-latest-location (username-from-topic topic)
                             (assoc (parse-string (String. payload "UTF-8") true)
                               (keyword "device")
-                              (device-from-topic topic)))
-    (log/warn (str topic " " (String. payload "UTF-8")))))
+                              (device-from-topic topic))))
 
 
 (defstate mqtt
