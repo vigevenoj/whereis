@@ -22,6 +22,7 @@
                  [metosin/compojure-api "1.1.12"]
                  [metosin/jsonista "0.2.2"]
                  [metosin/muuntaja "0.6.4"]
+                 [metosin/reitit "0.3.7"]
                  [metosin/ring-http-response "0.9.1"]
                  [mount "0.1.16"]
                  [nrepl "0.6.0"]
