@@ -4,8 +4,8 @@
             [ring.util.http-response :as response]
             [clojure.java.io :as io]))
 
-(defn home-page [_]
-  (layout/render "home.html"))
+(defn home-page [request]
+  (layout/render request "home.html"))
 
 (defn home-routes []
   [""
