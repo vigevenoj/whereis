@@ -66,9 +66,16 @@
 
 (defn get-latest-location [username]
   "Return the latest location for [username]"
-  (let [key (keyword username)]
-    ; these keys are selected to match the schema in whereis.routes.services
-    (select-keys (-> @locations key) [:device :lat :lon :tst])))
+  (let [key (keyword username)
+        ; these keys are selected to match the schema in whereis.routes.services
+        details (select-keys (-> @locations key) [:device :lat :lon :tst])
+        latitude (format "%.4f" (:lat details))
+        longitude (format "%.4f" (:lon details))]
+    {:device (:device details)
+     :lat latitude
+     :lon longitude
+     :tst (:tst details)
+     :username username}))
 
 (defn handle-owntracks-update
       "Handle a single location update"
