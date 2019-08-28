@@ -19,7 +19,6 @@
                  [luminus-immutant "0.2.5"]
                  [luminus/ring-ttl-session "0.3.3"]
                  [markdown-clj "1.10.0"]
-                 [metosin/compojure-api "1.1.12"]
                  [metosin/jsonista "0.2.3"]
                  [metosin/muuntaja "0.6.4"]
                  [metosin/reitit "0.3.9"]

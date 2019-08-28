@@ -9,7 +9,6 @@
     [reitit.ring.middleware.parameters :as parameters]
     [ring.util.http-response :refer :all]
     [clojure.spec.alpha :as s]
-;    [schema.core :as s]
     [buddy.auth.accessrules :refer [restrict]]
     [buddy.auth :refer [authenticated?]]
     [whereis.owntracks.core :as owntracks]
@@ -23,7 +22,7 @@
 (s/def ::lat number?)
 (s/def ::lon number?)
 (s/def ::tst number?)
-(s/def LocationUpdate (s/keys* :req [::username ::device ::lat ::lon ::tst]))
+(s/def LocationUpdate (s/keys* :req-un [::username ::device ::lat ::lon ::tst]))
 
 (defn service-routes []
   ["/api"
@@ -31,21 +30,21 @@
     :muuntaja formats/instance
     :swagger {:id ::api}
     :middleware [;; query-params & form-params
-                 parameters/parameters-middleware
-                 ;; content-negotiation
-                 muuntaja/format-negotiate-middleware
-                 ;; encoding response body
-                 muuntaja/format-response-middleware
-                 ;; exception handling
-;                 exception/exeception-middleware ; this doens't exist yet
-                 ;; decoding the requeset body
-                 muuntaja/format-request-middleware
-                 ;; coercing response bodies
-                 coercion/coerce-response-middleware
-                 ;; coercing request parameters
-                 coercion/coerce-request-middleware
-                 ;; multipart
-                 multipart/multipart-middleware]} ; might not be needed
+                  parameters/parameters-middleware
+                  ;; content-negotiation
+                  muuntaja/format-negotiate-middleware
+                  ;; encoding response body
+                  muuntaja/format-response-middleware
+                  ;; exception handling
+                  ;                 exception/exeception-middleware ; this doens't exist yet
+                  ;; decoding the requeset body
+                  muuntaja/format-request-middleware
+                  ;; coercing response bodies
+                  coercion/coerce-response-middleware
+                  ;; coercing request parameters
+                  coercion/coerce-request-middleware
+                  ;; multipart
+                  multipart/multipart-middleware]} ; might not be needed
 
    ;; swagger documentation
    ["" {:no-doc true
@@ -59,38 +58,28 @@
      {:get (swagger-ui/create-swagger-ui-handler
             {:url "/api/swagger.json"
              :config {:validator-url nil}})}]]
-   ["/whereis/:username"
+   ["/whereis/{username}"
     {:get {:summary "Location of a user"
            :parameters {:path {:username string?}}
-;           :responses {200 {:body LocationUpdate}}
+           ;           :responses {200 {:body LocationUpdate}}
            :handler (fn [{:keys [parameters]}]
                       (let [username (-> parameters :path :username)]
                         (if (owntracks/have-location-for? username)
                           (do
-                            (log/warn (str "getting location for user " ))
-                            (ok (assoc (owntracks/get-latest-location username) :username username)))
-                          (not-found))))}}]])
-
-;(defapi service-routes
-;  {:swagger {:ui "/swagger-ui"
-;             :spec "/swagger.json"
-;             :data {:info {:version "1.0.0"
-;                           :title "whereis API"
-;                           :description "Services to provide location-tracking information"}}}}
-;
-;  (context "/api" []
-;    :tags ["api"]
-;    (GET "/whereis/:username" [username]
-;      :return LocationUpdate
-;      :path-params [username :- String]
-;      :summary "location of a user"
-;      (if (owntracks/have-location-for? username)
-;        (do
-;          (log/warn (str "getting location for user " username))
-;          (ok (assoc (owntracks/get-latest-location username) :username username)))
-;        (not-found)))
-;
-;    (GET "/authenticated" []
-;      :auth-rules authenticated?
-;      :current-user user
-;      (ok {:user user}))))
+                            (log/warn (str "getting location for user " username))
+                            {:status 200
+                             :body (assoc (owntracks/get-latest-location username) :username username)})
+                          {:status 404
+                           :body {:error "not found"}})))}}]
+   ["/debug"
+    ["/userinfo" {:get
+                  {:summary "user info endpoint"
+                   :handler (fn [request]
+                              {:status 200
+                               :body (keys request)})}}]
+    ["/login" {:get
+               {:summary "auth test endpoint"
+                :middleware [(whereis.middleware/basic-auth nil) whereis.middleware/auth]
+                :handler (fn [request]
+                           {:status 200
+                            :body (keys request)})}}]] ])

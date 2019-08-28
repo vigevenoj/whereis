@@ -15,9 +15,28 @@
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth :refer [authenticated?]]
-            [buddy.auth.backends.session :refer [session-backend]])
+            [buddy.auth.backends.session :refer [session-backend]]
+            [whereis.auth :as auth])
   (:import 
            [org.joda.time ReadableInstant]))
+
+(defn auth
+  "Middleware used in routes that require authentication"
+  [handler]
+  (fn [request]
+    (if (authenticated? request)
+      (handler request)
+      {:status 401
+       :body {:error "not authorized"}})))
+
+(defn basic-auth [_]
+  (fn [handler]
+    (wrap-authentication handler (auth/basic-auth-backend nil))))
+
+(defn token-auth
+  "Middleware used on routes requiring token authentication"
+  [handler]
+  (wrap-authentication handler auth/token-backend))
 
 (defn wrap-internal-error [handler]
   (fn [req]
