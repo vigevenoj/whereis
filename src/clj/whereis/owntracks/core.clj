@@ -13,21 +13,25 @@
            (javax.net.ssl SSLContext)
            (javax.net.ssl TrustManagerFactory)))
 
+(defn use-custom-ssl?
+  (not (nil? (env :broker-ca-cert-path))))
+
 (defn socket-factory-from-ca-cert-path
   "Returns a socket factory with the provided certificate loaded as the only trust root."
   [filepath]
-  (let [ca-certificate (.generateCertificate
-                         (CertificateFactory/getInstance "X.509")
-                         (clojure.java.io/input-stream filepath))
-        ca-keystore (KeyStore/getInstance (KeyStore/getDefaultType))
-        tmf (TrustManagerFactory/getInstance "X509")
-        ssl-context (SSLContext/getInstance "TLSv1.2")]
-    (do
-      (.load ca-keystore nil (char-array ""))
-      (.setCertificateEntry ca-keystore "ca-certificate" ca-certificate)
-      (.init tmf ca-keystore)
-      (.init ssl-context nil (.getTrustManagers tmf) nil)
-      (.getSocketFactory ssl-context))))
+  (when (use-custom-ssl?)
+    (let [ca-certificate (.generateCertificate
+                           (CertificateFactory/getInstance "X.509")
+                           (clojure.java.io/input-stream filepath))
+          ca-keystore (KeyStore/getInstance (KeyStore/getDefaultType))
+          tmf (TrustManagerFactory/getInstance "X509")
+          ssl-context (SSLContext/getInstance "TLSv1.2")]
+      (do
+        (.load ca-keystore nil (char-array ""))
+        (.setCertificateEntry ca-keystore "ca-certificate" ca-certificate)
+        (.init tmf ca-keystore)
+        (.init ssl-context nil (.getTrustManagers tmf) nil)
+        (.getSocketFactory ssl-context)))))
 
 ; use http://www.luminusweb.net/docs/components.md as a reference:
 ; here we can call (mh/generate-id)
