@@ -8,7 +8,8 @@
     [clojurewerkz.machine-head.client :as mh]
     [mount.core :refer [defstate]])
   (:import (java.io InputStream)
-           (java.security KeyStore CertificateFactory)
+           (java.security KeyStore)
+           (java.security.cert CertificateFactory)
            (javax.net.ssl SSLContext)
            (javax.net.ssl TrustManagerFactory)))
 
