@@ -26,7 +26,11 @@
      (swagger-ui/create-swagger-ui-handler
       {:path   "/swagger-ui"
        :url    "/api/swagger.json"
-       :config {:validator-url nil}})
+       :securityDefinitions
+       {:BasicAuth {:type "basic"}
+        :ApiKeyAuth {:type "apiKey" :name "X-API-Key" :in "header"}}
+       :config {:validator-url nil
+                 }})
      (ring/create-resource-handler
       {:path "/"})
      (wrap-content-type

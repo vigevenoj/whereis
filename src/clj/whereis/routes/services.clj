@@ -50,33 +50,43 @@
    ["" {:no-doc true
         :swagger {:info {:title "whereis API"
                          :version "1.0.0"
-                         :description "Services to provide location-tracking information"}}}
+                         :description "Services to provide location-tracking information"}
+                  :securityDefinitions
+                  {:BasicAuth {:type "basic"}
+                   :ApiKeyAuth {:type "apiKey" :name "X-API-Key" :in "header"}}}}
     ["/swagger.json"
      {:get (swagger/create-swagger-handler)}]
 
     ["/api-docs/*"
      {:get (swagger-ui/create-swagger-ui-handler
             {:url "/api/swagger.json"
-             :config {:validator-url nil}})}]]
-   ["/whereis/{username}"
-    {:get {:summary "Location of a user"
-           :parameters {:path {:username string?}}
-           ;           :responses {200 {:body LocationUpdate}}
-           :handler (fn [{:keys [parameters]}]
-                      (let [username (-> parameters :path :username)]
-                        (if (owntracks/have-location-for? username)
-                          (do
-                            (log/warn (str "getting location for user " username))
-                            {:status 200
-                             :body (assoc (owntracks/get-latest-location username) :username username)})
-                          {:status 404
-                           :body {:error "not found"}})))}}]
-   ["/debug"
+             :config {:validator-url nil}})}]
+    ]
+   ["/whereis" {:swagger {:tags ["locations"]}}
+    ["/:username"
+      {:get {:summary "Location of a user"
+            :security [:BasicAuth :ApiKeyAuth]
+            :parameters {:path {:username string?}}
+            :responses {200 {:description "A location update"}
+                        401 {:description "Not authorized"}
+                        404 {:description "Not found, maybe unauthorized"}}
+            :middleware [whereis.middleware/auth]
+            :handler (fn [{:keys [parameters]}]
+                       (let [username (-> parameters :path :username)]
+                         (if (owntracks/have-location-for? username)
+                           (do
+                             (log/warn (str "getting location for user " username))
+                             {:status 200
+                              :body (owntracks/get-latest-location username)})
+                           {:status 404
+                            :body {:error "not found"}})))}}]
+    ]
+   ["/debug" {:swagger {:tags ["debug"]}}
     ["/userinfo" {:get
                   {:summary "user info endpoint"
                    :handler (fn [request]
                               {:status 200
-                               :body (keys request)})}}]
+                               :body (:headers request)})}}]
     ["/login" {:get
                {:summary "auth test endpoint"
                 :middleware [(whereis.middleware/basic-auth nil) whereis.middleware/auth]

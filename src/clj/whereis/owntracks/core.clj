@@ -14,6 +14,7 @@
            (javax.net.ssl TrustManagerFactory)))
 
 (defn use-custom-ssl?
+  []
   (not (nil? (env :broker-ca-cert-path))))
 
 (defn socket-factory-from-ca-cert-path

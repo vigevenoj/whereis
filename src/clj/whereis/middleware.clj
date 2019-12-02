@@ -24,10 +24,20 @@
   "Middleware used in routes that require authentication"
   [handler]
   (fn [request]
-    (if (authenticated? request)
+;    (let [api-key (buddy.auth.http/-get-header request "X-API-Key")
+;          basic-auth-creds (buddy.auth.http/-get-header request "Authorization")]
+    ; todo: write middleware/authenticate-via-api-key method
+    ; todo: write middleware/authenticate-vai-basic-auth method
+    ; todo: maybe write a middleware/authenticate-via-jwe-token method and wire that up too
+;      (if (or (middleware/authenticate-via-api-key api-key)
+;              (middleware/authenticate-via-basic-auth))
+;        (handler request)
+;        (ring.util.http-response/unauthorized)))
+    (do (log/warn "unauthenticated request")
+      (if (authenticated? request)
       (handler request)
       {:status 401
-       :body {:error "not authorized"}})))
+       :body {:error "not authorized"}}))))
 
 (defn basic-auth [_]
   (fn [handler]
