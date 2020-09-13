@@ -20,33 +20,21 @@
   (:import 
            [org.joda.time ReadableInstant]))
 
-(defn auth
+
+(defn token-authfn
+  [request token]
+  (-> token
+   (auth/verify)
+   (auth/extract)) ; this returns a map like {:user "jacob" :roles #{}}
+  )
+
+(defn token-auth-middleware
   "Middleware used in routes that require authentication"
   [handler]
   (fn [request]
-;    (let [api-key (buddy.auth.http/-get-header request "X-API-Key")
-;          basic-auth-creds (buddy.auth.http/-get-header request "Authorization")]
-    ; todo: write middleware/authenticate-via-api-key method
-    ; todo: write middleware/authenticate-vai-basic-auth method
-    ; todo: maybe write a middleware/authenticate-via-jwe-token method and wire that up too
-;      (if (or (middleware/authenticate-via-api-key api-key)
-;              (middleware/authenticate-via-basic-auth))
-;        (handler request)
-;        (ring.util.http-response/unauthorized)))
-    (do (log/warn "unauthenticated request")
-      (if (authenticated? request)
-      (handler request)
-      {:status 401
-       :body {:error "not authorized"}}))))
+    (handler request)
+))
 
-(defn basic-auth [_]
-  (fn [handler]
-    (wrap-authentication handler (auth/basic-auth-backend nil))))
-
-(defn token-auth
-  "Middleware used on routes requiring token authentication"
-  [handler]
-  (wrap-authentication handler auth/token-backend))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -91,7 +79,6 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
-      wrap-auth
       wrap-webjars
       wrap-flash
       (wrap-session {:cookie-attrs {:http-only true}})

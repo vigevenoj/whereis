@@ -35,8 +35,6 @@
                   muuntaja/format-negotiate-middleware
                   ;; encoding response body
                   muuntaja/format-response-middleware
-                  ;; exception handling
-                  ;                 exception/exeception-middleware ; this doens't exist yet
                   ;; decoding the requeset body
                   muuntaja/format-request-middleware
                   ;; coercing response bodies
@@ -89,7 +87,7 @@
                                :body (:headers request)})}}]
     ["/login" {:get
                {:summary "auth test endpoint"
-                :middleware [(whereis.middleware/basic-auth nil) whereis.middleware/auth]
+;                :middleware [(whereis.middleware/basic-auth nil) whereis.middleware/auth]
                 :handler (fn [request]
                            {:status 200
                             :body (keys request)})}}]] ])

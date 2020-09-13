@@ -16,6 +16,7 @@
                  [compojure "1.6.2"]
                  [cprop "0.1.17"]
                  [funcool/struct "1.4.0"]
+                 [keycloak-clojure "1.11.0"]
                  [luminus-immutant "0.2.5"]
                  [luminus/ring-ttl-session "0.3.3"]
                  [markdown-clj "1.10.5"]
@@ -39,7 +40,14 @@
                  [ring/ring-core "1.8.1"]
                  [ring/ring-defaults "0.3.2"]
                  [secretary "1.2.3"]
-                 [selmer "1.12.28"]]
+                 [selmer "1.12.28"]
+
+                 ; keycloak-specific requirements
+                 [org.keycloak/keycloak-adapter-core "11.0.2"]
+                 [org.keycloak/keycloak-core "11.0.2"]
+                 [org.jboss.logging/jboss-logging "3.4.1.Final"]
+                 [org.apache.httpcomponents/httpclient "4.5.12"]
+                 ]
 
   :min-lein-version "2.0.0"
   
