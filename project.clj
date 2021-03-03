@@ -11,42 +11,42 @@
                  [cljsjs/react-transition-group "4.3.0-0"]
                  [clojurewerkz/machine_head "1.0.0" :exclusions [com.google.guava/guava]]
                  [com.cognitect/transit-java "1.0.343"]
-                 [com.fasterxml.jackson.core/jackson-core "2.11.2"]
-                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.11.2"]
+                 [com.fasterxml.jackson.core/jackson-core "2.12.1"]
+                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.12.1"]
                  [compojure "1.6.2"]
                  [cprop "0.1.17"]
                  [funcool/struct "1.4.0"]
-                 [keycloak-clojure "1.11.0"]
+                 [keycloak-clojure "1.15.0"]
                  [luminus-immutant "0.2.5"]
                  [luminus/ring-ttl-session "0.3.3"]
                  [markdown-clj "1.10.5"]
-                 [metosin/jsonista "0.2.7"]
-                 [metosin/muuntaja "0.6.7"]
-                 [metosin/reitit "0.5.5"]
-                 [metosin/ring-http-response "0.9.1"]
+                 [metosin/jsonista "0.3.1"]
+                 [metosin/muuntaja "0.6.8"]
+                 [metosin/reitit "0.5.12"]
+                 [metosin/ring-http-response "0.9.2"]
                  [mount "0.1.16"]
-                 [nrepl "0.8.1"]
-                 [org.clojure/clojure "1.10.1"]
+                 [nrepl "0.8.3"]
+                 [org.clojure/clojure "1.10.2"]
                  [org.clojure/clojurescript "1.10.773" :scope "provided"]
-                 [org.clojure/tools.cli "1.0.194"]
+                 [org.clojure/tools.cli "1.0.206"]
                  [org.clojure/tools.logging "1.1.0"]
                  [org.webjars.bower/tether "2.0.0-beta.5"]
-                 [org.webjars/bootstrap "4.5.2"]
-                 [org.webjars/font-awesome "5.14.0"]
+                 [org.webjars/bootstrap "4.6.0"]
+                 [org.webjars/font-awesome "5.15.2"]
                  [org.webjars/webjars-locator "0.40"]
-                 [re-frame "1.1.1"]
-                 [reagent "0.10.0"]
+                 [re-frame "1.2.0"]
+                 [reagent "1.0.0"]
                  [ring-webjars "0.2.0"]
-                 [ring/ring-core "1.8.1"]
+                 [ring/ring-core "1.9.1"]
                  [ring/ring-defaults "0.3.2"]
                  [secretary "1.2.3"]
-                 [selmer "1.12.28"]
+                 [selmer "1.12.33"]
 
                  ; keycloak-specific requirements
-                 [org.keycloak/keycloak-adapter-core "11.0.2"]
-                 [org.keycloak/keycloak-core "11.0.2"]
+                 [org.keycloak/keycloak-adapter-core "12.0.4"]
+                 [org.keycloak/keycloak-core "12.0.4"]
                  [org.jboss.logging/jboss-logging "3.4.1.Final"]
-                 [org.apache.httpcomponents/httpclient "4.5.12"]
+                 [org.apache.httpcomponents/httpclient "4.5.13"]
                  ]
 
   :min-lein-version "2.0.0"
@@ -100,23 +100,22 @@
 
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
-;-Djavax.net.ssl.trustStore=/Users/vigevenoj/code/LocationServer/src/main/resources/sbe-mqtt.keystore -Djavax.net.ssl.trustStorePassword=changeit
    :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[binaryage/devtools "1.0.2"]
                                  [cheshire "5.10.0"]
-                                 [cider/piggieback "0.5.1"]
-                                 [day8.re-frame/re-frame-10x "0.7.0"]
+                                 [cider/piggieback "0.5.2"]
+                                 [day8.re-frame/re-frame-10x "1.0.1"]
                                  [day8.re-frame/tracing "0.6.0"]
                                  [doo "0.1.11"]
-                                 [expound "0.8.5"]
+                                 [expound "0.8.9"]
                                  [figwheel-sidecar "0.5.20"]
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2020-01-17"]
-                                 [ring/ring-devel "1.8.1"]
+                                 [ring/ring-devel "1.9.1"]
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.23.0"]
                                  [lein-doo "0.1.10"]
-                                 [lein-figwheel "0.5.18"]]
+                                 [lein-figwheel "0.5.20"]]
                   :cljsbuild
                   {:builds
                    {:app
@@ -128,10 +127,14 @@
                       :output-to "target/cljsbuild/public/js/app.js"
                       :output-dir "target/cljsbuild/public/js/out"
                       :source-map true
+                      :source-map-timestamp true
                       :optimizations :none
                       :pretty-print true
                       :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
-                      :preloads [day8.re-frame-10x.preload]}}}}
+                      :preloads [day8.re-frame-10x.preload]
+                      :externs ["react/externs/react.js" "lib/keycloak/keycloak-externs.js"]
+                      :foreign-libs [{:file "lib/keycloak/keycloak-min.js"
+                                      :provides ["keycloak-js"]}]}}}}
                   
                   
                   
