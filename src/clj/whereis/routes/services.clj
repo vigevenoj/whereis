@@ -68,7 +68,7 @@
             :responses {200 {:description "A location update"}
                         401 {:description "Not authorized"}
                         404 {:description "Not found, maybe unauthorized"}}
-            :middleware [whereis.middleware/auth]
+;            :middleware [whereis.middleware/auth]
             :handler (fn [{:keys [parameters]}]
                        (let [username (-> parameters :path :username)]
                          (if (owntracks/have-location-for? username)

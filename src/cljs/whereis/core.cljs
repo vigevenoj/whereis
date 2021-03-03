@@ -1,6 +1,7 @@
 (ns whereis.core
   (:require [baking-soda.core :as b]
             [reagent.core :as r]
+            [reagent.dom :as rdom]
             [re-frame.core :as rf]
             [goog.events :as events]
             [goog.history.EventType :as HistoryEventType]
@@ -86,7 +87,7 @@
 ;; Initialize app
 (defn mount-components []
   (rf/clear-subscription-cache!)
-  (r/render [#'page] (.getElementById js/document "app")))
+  (rdom/render [#'page] (.getElementById js/document "app")))
 
 (defn init! []
   (rf/dispatch-sync [:navigate :home])
