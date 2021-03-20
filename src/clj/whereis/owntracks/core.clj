@@ -102,7 +102,9 @@
                                                            :password (env :mqtt-password)
                                                            :socket-factory (socket-factory-from-ca-cert-path (env :broker-ca-cert-path))}})]
                    (do
+                     (log/info "Starting MQTT client")
                      (mh/subscribe mqtt {topic 0} handle-owntracks-update)
+                     (log/info (str "Subscribed to MQTT topic " topic))
                      mqtt))
           ;:start (if-let [broker-url (env :broker-url)]
           ;         (do
