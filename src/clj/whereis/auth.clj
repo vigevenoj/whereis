@@ -1,18 +1,18 @@
 (ns whereis.auth
   (:require [mount.core :as mount]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [whereis.config :refer [env]])
   (:import [org.keycloak.adapters KeycloakDeployment KeycloakDeploymentBuilder]
            [org.keycloak.representations AccessToken]
            [org.keycloak RSATokenVerifier]))
 
 
 (defn load-keycloak-deployment
-  ""
-  ([]
-   (load-keycloak-deployment "default-keycloak.json"))
-  ([keycloak-json-file]
-   (with-open [keycloak-json-is (io/input-stream (io/resource keycloak-json-file))]
-     (KeycloakDeploymentBuilder/build keycloak-json-is))))
+  "Load Keycloak configuration from our global application config"
+  []
+  (KeycloakDeploymentBuilder/build
+    (io/input-stream (.getBytes (cheshire.core/encode (:keycloak env))))))
+
 
 (mount/defstate keycloak-deployment
   :start (load-keycloak-deployment))
