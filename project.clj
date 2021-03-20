@@ -11,8 +11,8 @@
                  [cljsjs/react-transition-group "4.3.0-0"]
                  [clojurewerkz/machine_head "1.0.0" :exclusions [com.google.guava/guava]]
                  [com.cognitect/transit-java "1.0.343"]
-                 [com.fasterxml.jackson.core/jackson-core "2.12.1"]
-                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.12.1"]
+                 [com.fasterxml.jackson.core/jackson-core "2.12.2"]
+                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.12.2"]
                  [compojure "1.6.2"]
                  [cprop "0.1.17"]
                  [funcool/struct "1.4.0"]
@@ -26,12 +26,12 @@
                  [metosin/ring-http-response "0.9.2"]
                  [mount "0.1.16"]
                  [nrepl "0.8.3"]
-                 [org.clojure/clojure "1.10.2"]
+                 [org.clojure/clojure "1.10.3"]
                  [org.clojure/clojurescript "1.10.773" :scope "provided"]
                  [org.clojure/tools.cli "1.0.206"]
                  [org.clojure/tools.logging "1.1.0"]
                  [org.webjars.bower/tether "2.0.0-beta.5"]
-                 [org.webjars/bootstrap "4.6.0"]
+                 [org.webjars/bootstrap "4.6.0-1"]
                  [org.webjars/font-awesome "5.15.2"]
                  [org.webjars/webjars-locator "0.40"]
                  [re-frame "1.2.0"]
@@ -71,9 +71,9 @@
   
 
   :profiles
-  {:prod { :dependencies [[day8.re-frame/tracing-stubs "0.6.0"]]}
+  {:prod { :dependencies [[day8.re-frame/tracing-stubs "0.6.2"]]}
    :uberjar {:omit-source true
-             :dependencies [[day8.re-frame/tracing-stubs "0.6.0"]]
+             :dependencies [[day8.re-frame/tracing-stubs "0.6.2"]]
              :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
              :cljsbuild
              {:builds
@@ -105,11 +105,11 @@
                                  [cheshire "5.10.0"]
                                  [cider/piggieback "0.5.2"]
                                  [day8.re-frame/re-frame-10x "1.0.1"]
-                                 [day8.re-frame/tracing "0.6.0"]
+                                 [day8.re-frame/tracing "0.6.2"]
                                  [doo "0.1.11"]
                                  [expound "0.8.9"]
                                  [figwheel-sidecar "0.5.20"]
-                                 [pjstadig/humane-test-output "0.10.0"]
+                                 [pjstadig/humane-test-output "0.11.0"]
                                  [prone "2020-01-17"]
                                  [ring/ring-devel "1.9.1"]
                                  [ring/ring-mock "0.4.0"]]
